@@ -1,4 +1,4 @@
-from ctypes import alignment
+import os
 from tkinter import *
 from tkinter import ttk
 
@@ -13,6 +13,8 @@ year = 1212
 root = Tk()
 frm = ttk.Frame(root, padding=5, borderwidth=2)
 frm.grid()
+
+entry = ttk.Entry(frm)
 
 monday = ttk.Label(frm, text="Monday", width=20)
 tuesday = ttk.Label(frm, text="Tuesday", width=20)
@@ -63,13 +65,43 @@ def rewind_day():
     year_lb['text'] = year
     wich_day_lb['text'] = days[wich_day]
 
+def save():
+    global month, act_month, days_nb, act_day, days, year, year_lb, month_lb, day_lb, wich_day, wich_day_lb, entry
+    content = entry.get()
+    if (not content):
+        return
+    else:
+        try:
+            for saves in os.scandir("./saves"):
+                if (saves.is_file() == True and saves.name == content + ".save"):
+                    os.remove(f"./saves/{content}.save")
+        except:
+            os.mkdir("./saves")
+        with open(f"./saves/{content}.save", "w") as tf:
+            tf.write(f"{year}\n{act_month}\n{act_day}\n{wich_day}")
+
 def main():
+    ttk.Button(frm, text="Quit", command=root.destroy).grid(column=1, row=1)
+    ttk.Button(frm, text="Next", command=skip_day).grid(column=2, row=1)
+    ttk.Button(frm, text="prev", command=rewind_day).grid(column=3, row=1)
+
+    entry.grid(column=4, row=1)
+    ttk.Button(frm, text="save", command=save).grid(column=5, row=1)
+
     year_lb.grid(column=0, row=0)
     month_lb.grid(column=0, row=1)
     day_lb.grid(column=0, row=2)
     wich_day_lb.grid(column=0, row=3)
 
     ttk.Separator(frm, orient="horizontal").grid(column=0, row=4, sticky="ew", columnspan=50)
+
+    monday.grid(column=1, row=5)
+    tuesday.grid(column=2, row=5)
+    wednesday.grid(column=3, row=5)
+    thursday.grid(column=4, row=5)
+    friday.grid(column=5, row=5)
+    saturday.grid(column=6, row=5)
+    sunday.grid(column=7, row=5)
 
     ttk.Separator(frm, orient="horizontal").grid(column=1, row=6, sticky="ew", columnspan=7)
     ttk.Separator(frm, orient="horizontal").grid(column=1, row=7, sticky="ew", columnspan=7)
@@ -83,17 +115,6 @@ def main():
     ttk.Separator(frm, orient="vertical").grid(column=5, row=6, sticky="ens", rowspan=5)
     ttk.Separator(frm, orient="vertical").grid(column=6, row=6, sticky="ens", rowspan=5)
 
-    monday.grid(column=1, row=5)
-    tuesday.grid(column=2, row=5)
-    wednesday.grid(column=3, row=5)
-    thursday.grid(column=4, row=5)
-    friday.grid(column=5, row=5)
-    saturday.grid(column=6, row=5)
-    sunday.grid(column=7, row=5)
-
-    ttk.Button(frm, text="Quit", command=root.destroy).grid(column=1, row=1)
-    ttk.Button(frm, text="Next", command=skip_day).grid(column=2, row=1)
-    ttk.Button(frm, text="prev", command=rewind_day).grid(column=3, row=1)
     root.mainloop()
 
 main()
