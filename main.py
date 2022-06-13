@@ -14,7 +14,8 @@ root = Tk()
 frm = ttk.Frame(root, padding=5, borderwidth=2)
 frm.grid()
 
-entry = ttk.Entry(frm)
+entry_save = ttk.Entry(frm)
+entry_load = ttk.Entry(frm)
 
 monday = ttk.Label(frm, text="Monday", width=20)
 tuesday = ttk.Label(frm, text="Tuesday", width=20)
@@ -66,8 +67,8 @@ def rewind_day():
     wich_day_lb['text'] = days[wich_day]
 
 def save():
-    global month, act_month, days_nb, act_day, days, year, year_lb, month_lb, day_lb, wich_day, wich_day_lb, entry
-    content = entry.get()
+    global month, act_month, days_nb, act_day, days, year, year_lb, month_lb, day_lb, wich_day, wich_day_lb, entry_save
+    content = entry_save.get()
     if (not content):
         return
     else:
@@ -80,13 +81,47 @@ def save():
         with open(f"./saves/{content}.save", "w") as tf:
             tf.write(f"{year}\n{act_month}\n{act_day}\n{wich_day}")
 
-def main():
-    ttk.Button(frm, text="Quit", command=root.destroy).grid(column=1, row=1)
-    ttk.Button(frm, text="Next", command=skip_day).grid(column=2, row=1)
-    ttk.Button(frm, text="prev", command=rewind_day).grid(column=3, row=1)
+def load():
+    global month, act_month, days_nb, act_day, days, year, year_lb, month_lb, day_lb, wich_day, wich_day_lb, entry_load
+    content = entry_load.get()
+    if (not content):
+        return
+    else:
+        try:
+            for saves in os.scandir("./saves"):
+                if (saves.is_file() == True and saves.name == content + ".save"):
+                    with open(f"./saves/{content}.save", "r") as tf:
+                        load = tf.readlines()
+                        try:
+                            tmp_year = int(load[0])
+                            tmp_month = int(load[1])
+                            tmp_day = int(load[2])
+                            tmp_wich = int(load[3])
 
-    entry.grid(column=4, row=1)
-    ttk.Button(frm, text="save", command=save).grid(column=5, row=1)
+                            year = tmp_year
+                            act_month = tmp_month
+                            act_day = tmp_day
+                            wich_day = tmp_wich
+
+                            day_lb['text'] = act_day
+                            month_lb['text'] = month[act_month]
+                            year_lb['text'] = year
+                            wich_day_lb['text'] = days[wich_day]
+                        except:
+                            print("error")
+                            return
+        except:
+            os.mkdir("./saves")
+
+def main():
+    ttk.Button(frm, text="Quit", command=root.destroy).grid(column=1, row=0)
+    ttk.Button(frm, text="Next", command=skip_day).grid(column=1, row=2)
+    ttk.Button(frm, text="prev", command=rewind_day).grid(column=2, row=2)
+
+    entry_save.grid(column=1, row=1)
+    ttk.Button(frm, text="save", command=save).grid(column=2, row=1)
+    entry_load.grid(column=3, row=1)
+    ttk.Button(frm, text="load", command=load).grid(column=4, row=1)
 
     year_lb.grid(column=0, row=0)
     month_lb.grid(column=0, row=1)
