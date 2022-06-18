@@ -9,6 +9,8 @@ act_day = 1
 days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 wich_day = 0
 year = 1212
+day_list = []
+margin = wich_day % 7
 
 root = Tk()
 frm = ttk.Frame(root, padding=5, borderwidth=2)
@@ -16,6 +18,9 @@ frm.grid()
 
 entry_save = ttk.Entry(frm)
 entry_load = ttk.Entry(frm)
+
+for i in range(0, 35):
+    day_list.append(ttk.Button(frm))
 
 monday = ttk.Label(frm, text="Monday", width=20)
 tuesday = ttk.Label(frm, text="Tuesday", width=20)
@@ -31,7 +36,7 @@ day_lb = ttk.Label(frm, text=act_day)
 wich_day_lb = ttk.Label(frm, text=days[wich_day])
 
 def skip_day():
-    global month, act_month, days_nb, act_day, days, year, year_lb, month_lb, day_lb, wich_day, wich_day_lb
+    global month, act_month, days_nb, act_day, days, year, year_lb, month_lb, day_lb, wich_day, wich_day_lb, margin
     act_day += 1
     if (act_day > days_nb[act_month]):
         act_day = 1
@@ -47,6 +52,23 @@ def skip_day():
     month_lb['text'] = month[act_month]
     year_lb['text'] = year
     wich_day_lb['text'] = days[wich_day]
+    if act_day == 1:
+        margin = wich_day
+    i = 0
+    for _ in range(len(day_list)):
+        if i == act_day:
+            day_list[i - 1 + margin]["text"] += "\nAJD"
+            break
+        i +=1
+
+    if act_day == 1:
+        if act_month == 0:
+            day_list[days_nb[11] + margin]["text"] = ""
+        else:
+            print(days_nb[act_month - 1] - 1 + margin)
+            day_list[days_nb[act_month - 1] - 1 + margin]["text"] = ""
+    else:
+        day_list[i-2 + margin]["text"] = ""
 
 def rewind_day():
     global month, act_month, days_nb, act_day, days, year, year_lb, month_lb, day_lb, wich_day, wich_day_lb
@@ -115,8 +137,8 @@ def load():
 
 def main():
     ttk.Button(frm, text="Quit", command=root.destroy).grid(column=1, row=0)
-    ttk.Button(frm, text="Next", command=skip_day).grid(column=1, row=2)
-    ttk.Button(frm, text="prev", command=rewind_day).grid(column=2, row=2)
+    ttk.Button(frm, text="Next", command=skip_day).grid(column=2, row=2)
+    ttk.Button(frm, text="prev", command=rewind_day).grid(column=1, row=2)
 
     entry_save.grid(column=1, row=1)
     ttk.Button(frm, text="save", command=save).grid(column=2, row=1)
@@ -139,16 +161,21 @@ def main():
     sunday.grid(column=7, row=5)
 
     ttk.Separator(frm, orient="horizontal").grid(column=1, row=6, sticky="ew", columnspan=7)
-    ttk.Separator(frm, orient="horizontal").grid(column=1, row=7, sticky="ew", columnspan=7)
     ttk.Separator(frm, orient="horizontal").grid(column=1, row=8, sticky="ew", columnspan=7)
-    ttk.Separator(frm, orient="horizontal").grid(column=1, row=9, sticky="ew", columnspan=7)
     ttk.Separator(frm, orient="horizontal").grid(column=1, row=10, sticky="ew", columnspan=7)
-    ttk.Separator(frm, orient="vertical").grid(column=1, row=6, sticky="ens", rowspan=5)
-    ttk.Separator(frm, orient="vertical").grid(column=2, row=6, sticky="ens", rowspan=5)
-    ttk.Separator(frm, orient="vertical").grid(column=3, row=6, sticky="ens", rowspan=5)
-    ttk.Separator(frm, orient="vertical").grid(column=4, row=6, sticky="ens", rowspan=5)
-    ttk.Separator(frm, orient="vertical").grid(column=5, row=6, sticky="ens", rowspan=5)
-    ttk.Separator(frm, orient="vertical").grid(column=6, row=6, sticky="ens", rowspan=5)
+    ttk.Separator(frm, orient="horizontal").grid(column=1, row=12, sticky="ew", columnspan=7)
+    ttk.Separator(frm, orient="horizontal").grid(column=1, row=14, sticky="ew", columnspan=7)
+    ttk.Separator(frm, orient="vertical").grid(column=1, row=6, sticky="ens", rowspan=10)
+    ttk.Separator(frm, orient="vertical").grid(column=2, row=6, sticky="ens", rowspan=10)
+    ttk.Separator(frm, orient="vertical").grid(column=3, row=6, sticky="ens", rowspan=10)
+    ttk.Separator(frm, orient="vertical").grid(column=4, row=6, sticky="ens", rowspan=10)
+    ttk.Separator(frm, orient="vertical").grid(column=5, row=6, sticky="ens", rowspan=10)
+    ttk.Separator(frm, orient="vertical").grid(column=6, row=6, sticky="ens", rowspan=10)
+
+    for i in range(len(day_list)):
+        if i == act_day:
+            day_list[i - 1 + margin]["text"] += "\nAJD"
+        day_list[i].grid(column=i%7 + 1, row=int(i/7) * 2 + 7)
 
     root.mainloop()
 
